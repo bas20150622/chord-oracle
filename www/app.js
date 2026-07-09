@@ -76,7 +76,7 @@ function getOrderedNotesAndIntervals(referencePc, sourceIntervals) {
         if (b.semitones === 0 && a.semitones !== 0) return 1;
         return a.semitones - b.semitones;
     });
-    return { notes: items.map(i => i.note_name), intervals: items.map(i => i.short_name) };
+    return { notes: items.map(i => i.note_name), intervals: items.map(i => i.short_name), semitones: items.map(i => i.semitones) };
 }
 
 function hexToRgba(hex, alpha) {
@@ -157,8 +157,10 @@ function renderFretboard() {
         const xMid = (fretX(f - 1, start, span) + fretX(f, start, span)) / 2;
         const midY = (stringY(0) + stringY(5)) / 2;
         if (DOUBLE_DOT_FRETS.has(f)) {
-            g.appendChild(el('circle', { class: 'fret-dot', cx: xMid, cy: midY - 18, r: 6 }));
-            g.appendChild(el('circle', { class: 'fret-dot', cx: xMid, cy: midY + 18, r: 6 }));
+            const dotUpper = (stringY(1) + stringY(2)) / 2;
+            const dotLower = (stringY(3) + stringY(4)) / 2;
+            g.appendChild(el('circle', { class: 'fret-dot', cx: xMid, cy: dotUpper, r: 6 }));
+            g.appendChild(el('circle', { class: 'fret-dot', cx: xMid, cy: dotLower, r: 6 }));
         } else {
             g.appendChild(el('circle', { class: 'fret-dot', cx: xMid, cy: midY, r: 6 }));
         }
@@ -406,6 +408,7 @@ function renderChordInfo() {
         <h3>Root-relative <span class="root-note">(${selected.root_name})</span></h3>
         <div class="info-row"><span class="label">Notes:</span> ${rootInfo.notes.join(', ')}</div>
         <div class="info-row"><span class="label">Intervals:</span> ${rootInfo.intervals.join(' - ')}</div>
+        <div class="info-row"><span class="label">Semitones:</span> ${rootInfo.semitones.join(' - ')}</div>
     `;
     grid.appendChild(rootBox);
 
@@ -417,6 +420,7 @@ function renderChordInfo() {
         <h3>Bass-relative <span class="root-note">(${selected.bass_name})</span></h3>
         <div class="info-row"><span class="label">Notes:</span> ${bassInfo.notes.join(', ')}</div>
         <div class="info-row"><span class="label">Intervals:</span> ${bassInfo.intervals.join(' - ')}</div>
+        <div class="info-row"><span class="label">Semitones:</span> ${bassInfo.semitones.join(' - ')}</div>
     `;
     grid.appendChild(bassBox);
     panel.appendChild(grid);
