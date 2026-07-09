@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chord Oracle</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <header class="app-header">
+            <h1 class="app-title">CHORD ORACLE</h1>
+            <div class="tuning-select">
+                <label for="tuning">Tuning:</label>
+                <select id="tuning" disabled>
+                    <option value="standard">Standard</option>
+                </select>
+            </div>
+        </header>
+
+        <main class="fretboard-section">
+            <div class="fretboard-wrap">
+                <svg id="fretboard-svg" class="fretboard-svg" viewBox="0 0 1000 260" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Guitar fretboard"></svg>
+            </div>
+
+            <div class="controls-row">
+                <div class="fret-input">
+                    <label for="fret-text">Input:</label>
+                    <input type="text" id="fret-text" placeholder="X,X,0,2,3,2" autocomplete="off" spellcheck="false">
+                </div>
+            </div>
+        </main>
+
+        <section id="chord-info" class="chord-info">
+            <p class="chord-info-placeholder">Select notes on the fretboard</p>
+        </section>
+
+        <footer class="hotkey-bar">
+            <span><kbd>E</kbd> Expand</span>
+            <span class="sep">|</span>
+            <span><kbd>C</kbd> Clear</span>
+            <span class="sep">|</span>
+            <span><kbd>&larr;</kbd><kbd>&rarr;</kbd><kbd>&uarr;</kbd><kbd>&darr;</kbd> Transpose</span>
+            <span class="sep">|</span>
+            <span><kbd>Enter</kbd> Text input</span>
+            <span class="sep">|</span>
+            <span><kbd>Tab</kbd> Alt name</span>
+        </footer>
+    </div>
+    <script type="module" src="app.js"></script>
+</body>
+</html>

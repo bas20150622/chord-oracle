@@ -1,0 +1,428 @@
+/* Chord Oracle styles */
+
+:root {
+    --bg: #1a1a2e;
+    --panel-bg: #252540;
+    --wood-light: #5c3d2e;
+    --wood-dark: #3d2b1f;
+    --string-color: #c0c0c0;
+    --teal: #00d4aa;
+    --gold: #ffd700;
+    --muted-red: rgba(255, 107, 107, 0.6);
+    --text: #e8e8f0;
+    --text-muted: #9090a8;
+    --border: #3a3a5a;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+/* Header */
+
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 4px 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.app-title {
+    margin: 0;
+    font-size: 1.4rem;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.tuning-select {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.tuning-select select {
+    background: var(--panel-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 0.9rem;
+}
+
+/* Fretboard section */
+
+.fretboard-section {
+    padding: 20px 0;
+}
+
+.fretboard-wrap {
+    width: 100%;
+    background: linear-gradient(180deg, var(--wood-light), var(--wood-dark));
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4);
+}
+
+.fretboard-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    user-select: none;
+}
+
+.fret-hit {
+    cursor: pointer;
+}
+
+.fret-hit:hover {
+    fill: rgba(0, 212, 170, 0.15);
+}
+
+.nut-hit {
+    cursor: pointer;
+}
+
+.nut-hit:hover {
+    fill: rgba(0, 212, 170, 0.2);
+}
+
+.fret-dot {
+    fill: rgba(255, 255, 255, 0.25);
+}
+
+.string-line {
+    stroke: var(--string-color);
+}
+
+.fret-line {
+    stroke: rgba(0, 0, 0, 0.55);
+}
+
+.nut-line {
+    stroke: #f0f0f0;
+}
+
+.fret-number {
+    fill: var(--text-muted);
+    font-size: 13px;
+    text-anchor: middle;
+    font-family: inherit;
+}
+
+.string-label {
+    fill: var(--text);
+    font-size: 14px;
+    dominant-baseline: middle;
+    font-family: inherit;
+    font-weight: 600;
+}
+
+.note-marker {
+    fill: var(--teal);
+    stroke: #ffffff;
+    stroke-width: 2;
+    pointer-events: none;
+}
+
+.note-marker.root-marker {
+    fill: #e84040;
+}
+
+.note-label {
+    fill: #10101a;
+    font-size: 12px;
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+}
+
+.open-marker {
+    fill: none;
+    stroke: var(--teal);
+    stroke-width: 3;
+    pointer-events: none;
+}
+
+.open-marker.open-root-marker {
+    stroke: #e84040;
+}
+
+.mute-marker {
+    stroke: var(--muted-red);
+    stroke-width: 3;
+    pointer-events: none;
+}
+
+/* Controls row: text input + view buttons */
+
+.controls-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+}
+
+.fret-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 260px;
+}
+
+.fret-input label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.fret-input input {
+    flex: 1;
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    padding: 8px 10px;
+    font-size: 0.95rem;
+    font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+}
+
+.fret-input input:focus {
+    outline: 2px solid var(--teal);
+    outline-offset: 1px;
+}
+
+.view-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.view-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-right: 4px;
+}
+
+.view-btn {
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.view-btn:hover {
+    border-color: var(--teal);
+}
+
+.view-btn.active {
+    border-color: var(--teal);
+    color: var(--teal);
+    background: rgba(0, 212, 170, 0.1);
+    font-weight: 600;
+}
+
+/* Expanded view markers */
+
+.expanded-marker {
+    fill: rgba(0, 212, 170, 0.15);
+    stroke: rgba(0, 212, 170, 0.4);
+    stroke-width: 1.5;
+}
+
+.expanded-label {
+    fill: rgba(0, 212, 170, 0.6);
+    font-size: 10px;
+    font-weight: 600;
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+}
+
+.open-label {
+    fill: var(--teal);
+    font-size: 10px;
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+}
+
+/* Chord info panel */
+
+.chord-info {
+    background: var(--panel-bg);
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin-top: 16px;
+    min-height: 60px;
+}
+
+.chord-info-placeholder {
+    color: var(--text-muted);
+    margin: 0;
+    font-style: italic;
+}
+
+.chord-info-fingering {
+    margin: 0;
+    font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+    font-size: 1.05rem;
+    color: var(--text);
+}
+
+.chord-info-fingering .label,
+.chord-meta .label,
+.info-row .label {
+    color: var(--text-muted);
+    margin-right: 6px;
+}
+
+/* Chord name buttons */
+
+.chord-names {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.chord-name-btn {
+    background: transparent;
+    border: 2px solid var(--border);
+    color: var(--text);
+    font-size: 1.5rem;
+    font-weight: 700;
+    padding: 6px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+}
+
+.chord-name-btn:hover {
+    border-color: var(--gold);
+}
+
+.chord-name-btn.active {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+/* Interval info grid */
+
+.chord-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.interval-box {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    padding: 12px 14px;
+}
+
+.interval-box h3 {
+    margin: 0 0 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.interval-box .root-note {
+    color: var(--teal);
+}
+
+.info-row {
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+    font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+}
+
+/* Chord meta row */
+
+.chord-meta {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: 0.9rem;
+    font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+}
+
+.difficulty-badge {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.difficulty-beginner { background: rgba(0, 212, 170, 0.2); color: var(--teal); }
+.difficulty-intermediate { background: rgba(255, 215, 0, 0.2); color: var(--gold); }
+.difficulty-advanced { background: rgba(255, 107, 107, 0.2); color: #ff6b6b; }
+
+/* Text input error flash */
+
+.fret-input input.input-error {
+    outline: 2px solid #ff6b6b;
+    outline-offset: 1px;
+}
+
+/* Hotkey bar */
+
+.hotkey-bar {
+    margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 0;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    border-top: 1px solid var(--border);
+}
+
+.hotkey-bar kbd {
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 2px 6px;
+    font-size: 0.78rem;
+    color: var(--text);
+    font-family: inherit;
+}
+
+.hotkey-bar .sep {
+    color: var(--border);
+}
