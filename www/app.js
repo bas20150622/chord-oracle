@@ -79,6 +79,34 @@ function getOrderedNotesAndIntervals(referencePc, sourceIntervals) {
     return { notes: items.map(i => i.note_name), intervals: items.map(i => i.short_name) };
 }
 
+function hexToRgba(hex, alpha) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function getOrderedChordPcs() {
+    const selected = getSelectedMatch();
+    if (!selected || !state.chordResult) return null;
+    const cr = state.chordResult;
+    const items = cr.intervals_from_root.map(iv => {
+        const semitones = ((iv.note_pc - selected.root_pc) % 12 + 12) % 12;
+        return { note_pc: iv.note_pc, semitones };
+    });
+    items.sort((a, b) => {
+        if (a.semitones === 0 && b.semitones !== 0) return -1;
+        if (b.semitones === 0 && a.semitones !== 0) return 1;
+        return a.semitones - b.semitones;
+    });
+    return items.map(i => i.note_pc);
+}
+
+function getNoteColor(pc, orderedPcs) {
+    const idx = orderedPcs ? orderedPcs.indexOf(pc) : -1;
+    return idx >= 0 && idx < NOTE_COLORS.length ? NOTE_COLORS[idx] : '#00d4aa';
+}
+
 function getIntervalLabel(stateIdx, fret) {
     const selected = getSelectedMatch();
     if (!selected || fret < 0) return null;
@@ -184,8 +212,7 @@ function renderFretboard() {
 
     // Note markers
     const noteG = el('g', { class: 'note-group' });
-    const selectedMatch = getSelectedMatch();
-    const rootPc = selectedMatch ? selectedMatch.root_pc : null;
+    const orderedPcs = getOrderedChordPcs();
     for (let row = 0; row < NUM_STRINGS; row++) {
         const si = rowToStateIndex(row);
         const fret = state.frets[si];
@@ -204,11 +231,11 @@ function renderFretboard() {
         if (fret === 0) {
             if (showNut) {
                 const cx = fretX(0, start, span);
-                const isOpenRoot = rootPc !== null && (state.tuning[si] % 12) === rootPc;
-                noteG.appendChild(el('circle', { class: isOpenRoot ? 'open-marker open-root-marker' : 'open-marker', cx, cy: y, r: 10 }));
+                const openColor = getNoteColor(state.tuning[si] % 12, orderedPcs);
+                noteG.appendChild(el('circle', { class: 'open-marker', cx, cy: y, r: 10, stroke: openColor }));
                 const label = getIntervalLabel(si, 0);
                 if (label) {
-                    const t = el('text', { class: 'open-label', x: cx, y: y + 0.5 });
+                    const t = el('text', { class: 'open-label', x: cx, y: y + 0.5, fill: openColor });
                     t.textContent = label;
                     noteG.appendChild(t);
                 }
@@ -220,8 +247,8 @@ function renderFretboard() {
         const xPrev = fretX(fret - 1, start, span);
         const xCur = fretX(fret, start, span);
         const cx = (xPrev + xCur) / 2;
-        const isRoot = rootPc !== null && ((state.tuning[si] + fret) % 12) === rootPc;
-        noteG.appendChild(el('circle', { class: isRoot ? 'note-marker root-marker' : 'note-marker', cx, cy: y, r: 13 }));
+        const fretColor = getNoteColor((state.tuning[si] + fret) % 12, orderedPcs);
+        noteG.appendChild(el('circle', { class: 'note-marker', cx, cy: y, r: 13, fill: fretColor }));
         const label = getIntervalLabel(si, fret);
         const t = el('text', { class: 'note-label', x: cx, y });
         t.textContent = label || '';
@@ -238,21 +265,22 @@ function renderExpandedPositions(g, start, end, span) {
     if (!cr) return;
 
     const selected = getSelectedMatch();
-    const rootPc = selected ? selected.root_pc : cr.primary.root_pc;
+    const expRootPc = selected ? selected.root_pc : cr.primary.root_pc;
     const intervals = cr.intervals_from_root.map(iv => iv.semitones);
     const positions = get_chord_positions(
-        rootPc, new Uint8Array(intervals),
+        expRootPc, new Uint8Array(intervals),
         new Uint8Array(state.tuning), start, end
     );
 
     if (!positions || positions.error) return;
+
+    const orderedPcs = getOrderedChordPcs();
 
     for (const pos of positions) {
         const row = NUM_STRINGS - 1 - pos.string_index;
         const y = stringY(row);
         const fret = pos.fret;
 
-        // Skip positions that are already selected (primary fingering)
         if (state.frets[pos.string_index] === fret) continue;
 
         let cx;
@@ -266,8 +294,13 @@ function renderExpandedPositions(g, start, end, span) {
             continue;
         }
 
-        g.appendChild(el('circle', { class: 'expanded-marker', cx, cy: y, r: 10 }));
-        const t = el('text', { class: 'expanded-label', x: cx, y });
+        const expPc = (state.tuning[pos.string_index] + pos.fret) % 12;
+        const expColor = getNoteColor(expPc, orderedPcs);
+        g.appendChild(el('circle', {
+            class: 'expanded-marker', cx, cy: y, r: 10,
+            fill: hexToRgba(expColor, 0.15), stroke: hexToRgba(expColor, 0.4),
+        }));
+        const t = el('text', { class: 'expanded-label', x: cx, y, fill: hexToRgba(expColor, 0.6) });
         t.textContent = pos.interval_short;
         g.appendChild(t);
     }
@@ -394,8 +427,17 @@ function renderChordInfo() {
     meta.innerHTML = `
         <span><span class="label">Fingering:</span> ${formatFingering(state.frets)}</span>
         <span><span class="label">Position:</span> ${formatPosition(state.frets)}</span>
+        <span><span class="label">Voicing:</span> ${getInversionLabel(selected)}</span>
     `;
     panel.appendChild(meta);
+}
+
+function getInversionLabel(selected) {
+    if (!selected.is_inversion) return 'Root position';
+    const interval = ((selected.bass_pc - selected.root_pc) % 12 + 12) % 12;
+    if (interval === 3 || interval === 4) return '1st inversion';
+    if (interval === 6 || interval === 7 || interval === 8) return '2nd inversion';
+    return '3rd inversion';
 }
 
 function formatFingering(frets) {
@@ -550,6 +592,7 @@ function initTuningSelector() {
 
 const NOTE_NAMES = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
 const INTERVAL_SHORT_NAMES = ['R', 'm2', 'M2', 'm3', 'M3', 'P4', 'b5', 'P5', '#5', 'M6', 'm7', 'M7'];
+const NOTE_COLORS = ['#e84040', '#00d4aa', '#ffd700', '#4a9eff', '#ff69b4', '#ff8c00'];
 function formatTuningNotes(strings) {
     return strings.map(midi => NOTE_NAMES[midi % 12]).join(' ');
 }

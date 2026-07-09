@@ -139,14 +139,9 @@ html, body {
 }
 
 .note-marker {
-    fill: var(--teal);
     stroke: #ffffff;
     stroke-width: 2;
     pointer-events: none;
-}
-
-.note-marker.root-marker {
-    fill: #e84040;
 }
 
 .note-label {
@@ -160,13 +155,8 @@ html, body {
 
 .open-marker {
     fill: none;
-    stroke: var(--teal);
     stroke-width: 3;
     pointer-events: none;
-}
-
-.open-marker.open-root-marker {
-    stroke: #e84040;
 }
 
 .mute-marker {
@@ -251,13 +241,10 @@ html, body {
 /* Expanded view markers */
 
 .expanded-marker {
-    fill: rgba(0, 212, 170, 0.15);
-    stroke: rgba(0, 212, 170, 0.4);
     stroke-width: 1.5;
 }
 
 .expanded-label {
-    fill: rgba(0, 212, 170, 0.6);
     font-size: 10px;
     font-weight: 600;
     text-anchor: middle;
@@ -266,7 +253,6 @@ html, body {
 }
 
 .open-label {
-    fill: var(--teal);
     font-size: 10px;
     font-weight: 700;
     text-anchor: middle;
